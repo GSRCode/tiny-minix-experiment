@@ -1,5 +1,6 @@
 #include "console.h"
 #include "protect.h"
+#include "pic.h"
 
 extern void trigger_divide_error(void);
 extern void trigger_invalid_opcode(void);
@@ -20,6 +21,10 @@ void kernel_main(void)
 
     kprint("IDT initialized.\n");
 
+    pic_init();
+
+    kprint("PIC initialized and IRQs masked.\n");
+
     /*
      * Deliberately generate exception vector 0.
      */
@@ -29,13 +34,8 @@ void kernel_main(void)
     // kprint("Triggering invalid opcode...\n");
     // trigger_invalid_opcode();
 
-    kprint("Triggering general protection fault...\n");
-    trigger_general_protection();
-
-    /*
-     * We should never reach this line.
-     */
-    kprint("ERROR: divide error returned.\n");
+    //kprint("Triggering general protection fault...\n");
+    //trigger_general_protection();
 
 
     kprint("Kernel ready.\n");

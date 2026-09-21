@@ -75,14 +75,17 @@ protect.o: kernel/protect.c kernel/protect.h kernel/descriptor.h
 exception.o: kernel/exception.c kernel/exception.h kernel/console.h
 	$(CC) $(CFLAGS) -c kernel/exception.c -o exception.o
 
+pic.o: kernel/pic.c kernel/pic.h kernel/io.h
+	$(CC) $(CFLAGS) -c kernel/pic.c -o pic.o
+
 
 # ------------------------------------------------------------
 # Link kernel ELF
 # ------------------------------------------------------------
 
-kernel.elf: entry.o main.o console.o protect.o exception.o linker.ld
+kernel.elf: entry.o main.o console.o protect.o exception.o pic.o linker.ld
 	$(LD) $(LDFLAGS) \
-	    entry.o main.o console.o protect.o exception.o \
+	    entry.o main.o console.o protect.o exception.o pic.o \
 	    -o kernel.elf
 
 # ------------------------------------------------------------
@@ -137,6 +140,7 @@ clean:
 	    main.o \
 	    console.o \
 		exception.o \
+		pic.o \
 		protect.o \
 	    kernel.elf \
 	    kernel.bin \

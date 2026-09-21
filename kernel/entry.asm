@@ -24,10 +24,13 @@ GLOBAL idt_load
 
 GLOBAL divide_error
 GLOBAL invalid_opcode
+GLOBAL general_protection
+
 GLOBAL trigger_divide_error
 GLOBAL trigger_invalid_opcode
-GLOBAL general_protection
 GLOBAL trigger_general_protection
+
+GLOBAL outb
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
@@ -433,5 +436,24 @@ trigger_general_protection:
     mov ds, ax
 
     ; We should never reach here.
+
+    ret
+
+; ============================================================
+; void outb(unsigned short port, unsigned char value);
+;
+; 32-bit cdecl stack on entry:
+;
+;   [ESP + 4] = port
+;   [ESP + 8] = value
+;
+; OUT DX, AL writes one byte to an x86 I/O port.
+; ============================================================
+
+outb:
+    mov dx, [esp + 4]       ; DX = port
+    mov al, [esp + 8]       ; AL = value
+
+    out dx, al
 
     ret
