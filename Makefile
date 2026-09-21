@@ -72,16 +72,18 @@ console.o: kernel/console.c kernel/console.h
 protect.o: kernel/protect.c kernel/protect.h kernel/descriptor.h
 	$(CC) $(CFLAGS) -c kernel/protect.c -o protect.o
 
+exception.o: kernel/exception.c kernel/exception.h kernel/console.h
+	$(CC) $(CFLAGS) -c kernel/exception.c -o exception.o
+
 
 # ------------------------------------------------------------
 # Link kernel ELF
 # ------------------------------------------------------------
 
-kernel.elf: entry.o main.o console.o protect.o linker.ld
+kernel.elf: entry.o main.o console.o protect.o exception.o linker.ld
 	$(LD) $(LDFLAGS) \
-	    entry.o main.o console.o protect.o \
+	    entry.o main.o console.o protect.o exception.o \
 	    -o kernel.elf
-
 
 # ------------------------------------------------------------
 # Convert ELF kernel to raw binary
@@ -134,6 +136,7 @@ clean:
 	    entry.o \
 	    main.o \
 	    console.o \
+		exception.o \
 		protect.o \
 	    kernel.elf \
 	    kernel.bin \

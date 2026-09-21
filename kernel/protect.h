@@ -12,6 +12,8 @@
 /* Exception vectors. */
 
 #define DIVIDE_VECTOR       0
+#define INVALID_OPCODE_VECTOR  6
+#define GENERAL_PROTECTION_VECTOR  13
 
 
 /* Privilege levels. */

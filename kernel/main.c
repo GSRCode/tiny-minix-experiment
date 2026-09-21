@@ -2,6 +2,8 @@
 #include "protect.h"
 
 extern void trigger_divide_error(void);
+extern void trigger_invalid_opcode(void);
+extern void trigger_general_protection(void);
 
 
 void kernel_main(void)
@@ -21,9 +23,14 @@ void kernel_main(void)
     /*
      * Deliberately generate exception vector 0.
      */
-    kprint("Triggering divide error...\n");
+    // kprint("Triggering divide error...\n");
+    // trigger_divide_error();
+    
+    // kprint("Triggering invalid opcode...\n");
+    // trigger_invalid_opcode();
 
-    trigger_divide_error();
+    kprint("Triggering general protection fault...\n");
+    trigger_general_protection();
 
     /*
      * We should never reach this line.

@@ -20,11 +20,19 @@ BITS 16
 SECTION .text
 
 GLOBAL _start
-GLOBAL divide_error
 GLOBAL idt_load
+
+GLOBAL divide_error
+GLOBAL invalid_opcode
 GLOBAL trigger_divide_error
+GLOBAL trigger_invalid_opcode
+GLOBAL general_protection
+GLOBAL trigger_general_protection
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
+EXTERN exception
+EXTERN exception_error
+
 EXTERN __bss_start
 EXTERN __bss_end
 
@@ -284,25 +292,69 @@ kernel_halt:
 
     jmp kernel_halt
 
-; ---------------------------------------------------------
-; Divide Error Exception
-;
-; CPU exception vector 0.
-;
-; This symbol is referenced by protect.c when it creates
-; IDT entry 0.
-;
-; For now, simply stop the processor if this exception
-; occurs. Later this routine will call a C exception
-; handler.
-; ---------------------------------------------------------
+
 
 divide_error:
+    push dword 0          ; dummy error code
+    push dword 0               ; #DE = vector 0
+    jmp common_error_exception
+
+
+invalid_opcode:
+    push dword 0          ; dummy error code
+    push dword 6               ; #UD = vector 6
+    jmp common_error_exception
+
+general_protection:
+
+    ; Unlike #DE and #UD, the CPU has already pushed
+    ; an error code for #GP.
+    ;
+    ; On entry:
+    ;
+    ;   [ESP + 0]  = error code
+    ;   [ESP + 4]  = EIP
+    ;   [ESP + 8]  = CS
+    ;   [ESP + 12] = EFLAGS
+    ;
+    ; Add the vector number above the CPU error code.
+
+    push dword 13
+
+    jmp common_error_exception
+
+common_error_exception:
     cli
 
-divide_error_halt:
+    ; Stack:
+    ;
+    ; [ESP + 16] = EFLAGS
+    ; [ESP + 12] = CS
+    ; [ESP + 8]  = EIP
+    ; [ESP + 4]  = CPU error code
+    ; [ESP + 0]  = vector
+    ;
+    ; C function:
+    ;
+    ; exception_error(vector, error, eip, cs, eflags)
+    ;
+    ; cdecl pushes arguments right-to-left.
+
+    push dword [esp + 16]      ; EFLAGS
+    push dword [esp + 16]      ; CS
+    push dword [esp + 16]      ; EIP
+    push dword [esp + 16]      ; error code
+    push dword [esp + 16]      ; vector
+
+    call exception_error
+
+    ; Five arguments x 4 bytes.
+    add esp, 20
+
+common_error_exception_halt:
     hlt
-    jmp divide_error_halt
+    jmp common_error_exception_halt
+
 
 ; ---------------------------------------------------------
 ; Load Interrupt Descriptor Table Register (IDTR).
@@ -352,4 +404,34 @@ trigger_divide_error:
     div ecx
 
     ; We should never reach here.
+    ret
+
+trigger_invalid_opcode:
+
+    ; UD2 is specifically provided by x86 for generating
+    ; an Invalid Opcode exception (#UD).
+    ;
+    ; CPU should invoke vector 6.
+
+    ud2
+
+    ; We should never reach this RET because our
+    ; exception handler halts the machine.
+
+    ret
+
+trigger_general_protection:
+
+    ; 0x18 would refer to GDT entry 3.
+    ;
+    ; Our tiny GDT only contains entries 0, 1 and 2,
+    ; so this selector is outside our GDT limit.
+    ;
+    ; Loading it into DS should generate #GP.
+
+    mov ax, 0x18
+    mov ds, ax
+
+    ; We should never reach here.
+
     ret

@@ -141,3 +141,59 @@ void kprint(const char *message)
         i++;
     }
 }
+
+/*
+ * Print a 32-bit unsigned integer in hexadecimal.
+ *
+ * Example:
+ *
+ *     kprint_hex(0x1234);
+ *
+ * prints:
+ *
+ *     0x00001234
+ */
+void kprint_hex(unsigned int value)
+{
+    static const char hex[] = "0123456789ABCDEF";
+
+    /*
+     * 0x + 8 hexadecimal digits + '\0'
+     *
+     * Example:
+     *
+     * 0x12345678
+     *
+     * requires 10 visible characters.
+     */
+    char buffer[11];
+
+    int i;
+
+    buffer[0] = '0';
+    buffer[1] = 'x';
+
+    /*
+     * Extract one hexadecimal digit at a time,
+     * starting with the least significant nibble.
+     *
+     * value & 0xF gives the lowest 4 bits.
+     */
+    for (i = 0; i < 8; i++)
+    {
+        buffer[9 - i] = hex[value & 0xF];
+
+        /*
+         * Move the next hexadecimal digit
+         * into the lowest 4 bits.
+         */
+        value >>= 4;
+    }
+
+    /*
+     * C strings must end with a null byte.
+     */
+    buffer[10] = '\0';
+
+    kprint(buffer);
+}

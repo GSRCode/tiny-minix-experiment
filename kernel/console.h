@@ -1,14 +1,15 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-/*
- * Clear the VGA text screen and reset the software cursor.
- */
 void console_clear(void);
 
-/*
- * Print a null-terminated string.
- */
 void kprint(const char *message);
+
+/*
+ * Print a 32-bit unsigned value as:
+ *
+ *     0x12345678
+ */
+void kprint_hex(unsigned int value);
 
 #endif

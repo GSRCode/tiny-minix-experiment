@@ -2,6 +2,8 @@
 #include "protect.h"
 
 extern void divide_error(void);
+extern void invalid_opcode(void);
+extern void general_protection(void);
 
 /*
  * Interrupt Descriptor Table.
@@ -88,11 +90,27 @@ void prot_init(void)
         unsigned char vec_nr;
         unsigned char privilege;
     }
+   
     gate_table[] =
     {
-        { divide_error, DIVIDE_VECTOR, INTR_PRIVILEGE }
-    };
+        {
+        divide_error,
+        DIVIDE_VECTOR,
+        INTR_PRIVILEGE
+        },
 
+        {
+        invalid_opcode,
+        INVALID_OPCODE_VECTOR,
+        INTR_PRIVILEGE
+        },
+
+        {
+        general_protection,
+        GENERAL_PROTECTION_VECTOR,
+        INTR_PRIVILEGE
+        }
+    };
     unsigned int i;
 
     /*
