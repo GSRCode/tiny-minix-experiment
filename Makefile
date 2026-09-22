@@ -78,14 +78,19 @@ exception.o: kernel/exception.c kernel/exception.h kernel/console.h
 pic.o: kernel/pic.c kernel/pic.h kernel/io.h
 	$(CC) $(CFLAGS) -c kernel/pic.c -o pic.o
 
+clock.o: kernel/clock.c kernel/clock.h
+	$(CC) $(CFLAGS) -c kernel/clock.c -o clock.o
+
+pit.o: kernel/pit.c kernel/pit.h
+	$(CC) $(CFLAGS) -c kernel/pit.c -o pit.o
 
 # ------------------------------------------------------------
 # Link kernel ELF
 # ------------------------------------------------------------
 
-kernel.elf: entry.o main.o console.o protect.o exception.o pic.o linker.ld
+kernel.elf: entry.o main.o console.o protect.o exception.o pic.o clock.o pit.o linker.ld
 	$(LD) $(LDFLAGS) \
-	    entry.o main.o console.o protect.o exception.o pic.o \
+	    entry.o main.o console.o protect.o exception.o pic.o clock.o pit.o \
 	    -o kernel.elf
 
 # ------------------------------------------------------------
@@ -141,6 +146,8 @@ clean:
 	    console.o \
 		exception.o \
 		pic.o \
+		clock.o \
+		pit.o \
 		protect.o \
 	    kernel.elf \
 	    kernel.bin \

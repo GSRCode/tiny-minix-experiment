@@ -16,6 +16,10 @@
 #define PIC_SLAVE_OFFSET    0x28
 
 
+#define PIC_EOI 0x20
+
 void pic_init(void);
+void pic_eoi(void);
+void pic_unmask_irq(unsigned int irq);
 
 #endif

@@ -1,9 +1,11 @@
 #include "descriptor.h"
 #include "protect.h"
+#include "pic.h"
 
 extern void divide_error(void);
 extern void invalid_opcode(void);
 extern void general_protection(void);
+extern void clock_interrupt(void);
 
 /*
  * Interrupt Descriptor Table.
@@ -108,6 +110,12 @@ void prot_init(void)
         {
         general_protection,
         GENERAL_PROTECTION_VECTOR,
+        INTR_PRIVILEGE
+        },
+
+        {
+        clock_interrupt,
+        PIC_MASTER_OFFSET,
         INTR_PRIVILEGE
         }
     };

@@ -25,16 +25,21 @@ GLOBAL idt_load
 GLOBAL divide_error
 GLOBAL invalid_opcode
 GLOBAL general_protection
+GLOBAL clock_interrupt
 
 GLOBAL trigger_divide_error
 GLOBAL trigger_invalid_opcode
 GLOBAL trigger_general_protection
 
 GLOBAL outb
+GLOBAL inb
+GLOBAL enable_interrupts
+GLOBAL cpu_halt
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
 EXTERN exception_error
+EXTERN clock_handler
 
 EXTERN __bss_start
 EXTERN __bss_end
@@ -358,6 +363,42 @@ common_error_exception_halt:
     hlt
     jmp common_error_exception_halt
 
+; ============================================================
+; Hardware interrupt: IRQ0 - System timer
+;
+; The master 8259A PIC has been remapped so:
+;
+;     IRQ0 -> IDT vector 0x20
+;
+; For now this is only a placeholder.
+;
+; IRQ0 is still masked at the PIC and interrupts are still
+; disabled globally, so this handler should not execute yet.
+; ============================================================
+
+clock_interrupt:
+
+    ; Save the general-purpose registers.
+    ;
+    ; The C compiler is free to modify registers while
+    ; executing clock_handler(), so preserve the interrupted
+    ; program's register state.
+
+    pushad
+
+    ; Call the C-level clock interrupt handler.
+
+    call clock_handler
+
+    ; Restore the interrupted register state.
+
+    popad
+
+    ; Return from the interrupt.
+    ;
+    ; IRETD restores EIP, CS and EFLAGS pushed by the CPU.
+
+    iretd
 
 ; ---------------------------------------------------------
 ; Load Interrupt Descriptor Table Register (IDTR).
@@ -456,4 +497,48 @@ outb:
 
     out dx, al
 
+    ret
+
+; ============================================================
+; Read one byte from an I/O port.
+;
+; unsigned char inb(unsigned short port);
+;
+; C calling convention:
+;     [esp + 4] = port
+;
+; Return value:
+;     AL = byte read from port
+; ============================================================
+
+inb:
+    mov edx, [esp + 4]
+    in al, dx
+    ret
+
+; ============================================================
+; Enable maskable hardware interrupts.
+;
+; void enable_interrupts(void);
+;
+; STI sets the Interrupt Flag (IF) in EFLAGS.
+; After this, the CPU can accept maskable hardware interrupts
+; such as IRQ0 from the timer.
+; ============================================================
+
+enable_interrupts:
+    sti
+    ret
+
+; ============================================================
+; Halt the CPU until the next hardware interrupt.
+;
+; void cpu_halt(void);
+;
+; With interrupts enabled, HLT stops instruction execution
+; until an interrupt arrives.
+; ============================================================
+
+cpu_halt:
+    hlt
     ret

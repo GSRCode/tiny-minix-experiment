@@ -12,4 +12,6 @@ void kprint(const char *message);
  */
 void kprint_hex(unsigned int value);
 
+void kprint_uint(unsigned long value);
+
 #endif

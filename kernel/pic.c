@@ -83,3 +83,47 @@ void pic_init(void)
     outb(PIC_MASTER_DATA, 0xFF);
     outb(PIC_SLAVE_DATA,  0xFF);
 }
+
+/*
+ * Tell the master 8259A PIC that the current
+ * hardware interrupt has been serviced.
+ *
+ * For now Tiny MINIX only handles IRQ0, which
+ * belongs to the master PIC.
+ */
+void pic_eoi(void)
+{
+    outb(PIC_MASTER_COMMAND, PIC_EOI);
+}
+
+void pic_unmask_irq(unsigned int irq)
+{
+    unsigned char mask;
+
+    /*
+     * For now Tiny MINIX supports unmasking only
+     * IRQs belonging to the master PIC.
+     */
+    if (irq >= 8)
+        return;
+
+    /*
+     * Read the current interrupt mask.
+     */
+    mask = inb(PIC_MASTER_DATA);
+
+    /*
+     * A mask bit of:
+     *
+     *     1 = IRQ disabled
+     *     0 = IRQ enabled
+     *
+     * Clear the bit corresponding to this IRQ.
+     */
+    mask &= ~(1 << irq);
+
+    /*
+     * Write the new mask back to the PIC.
+     */
+    outb(PIC_MASTER_DATA, mask);
+}
