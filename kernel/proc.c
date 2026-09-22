@@ -5,7 +5,11 @@ struct proc *proc_ptr;
 static unsigned char proc_stack[NR_PROCS][K_STACK_SIZE];
 
 extern void switch_context(unsigned long *old_sp,
-                           unsigned long new_sp);
+                           unsigned long new_sp,
+                           unsigned long old_flags);
+
+extern unsigned long disable_interrupts(void);
+extern void restore_flags(unsigned long flags);
 
 
 static void copy_name(char *dest, const char *src)
@@ -92,6 +96,9 @@ void yield(void)
 {
     struct proc *old_proc;
     struct proc *new_proc;
+    unsigned long flags;
+
+    flags = disable_interrupts();
 
     old_proc = proc_ptr;
 
@@ -100,12 +107,15 @@ void yield(void)
     new_proc = proc_ptr;
 
     if (new_proc == 0 || new_proc == old_proc) //Nothing to switch to
+    {
+        restore_flags(flags);
         return;
+    }
 
     /*
      * Save the old process's ESP and load
      * the new process's ESP.
      */
     switch_context(&old_proc->p_sp,
-                   new_proc->p_sp);
+                   new_proc->p_sp, flags);
 }

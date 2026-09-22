@@ -37,6 +37,8 @@ GLOBAL enable_interrupts
 GLOBAL cpu_halt
 GLOBAL restore_context
 GLOBAL switch_context
+GLOBAL disable_interrupts
+GLOBAL restore_flags
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
@@ -574,6 +576,7 @@ switch_context:
     ; [esp]     = return EIP
     ; [esp + 4] = &old_proc->p_sp
     ; [esp + 8] = new_proc->p_sp
+    ; [esp + 12] original EFLAGS
     ;
 
     ; Save the new stack pointer before changing ESP.
@@ -584,6 +587,9 @@ switch_context:
 
     ; Get the return address.
     mov eax, [esp]
+
+    ; Original EFLAGS from before CLI.
+    mov ebx, [esp + 12]
 
     
     ; We want to construct:
@@ -599,7 +605,7 @@ switch_context:
     ;  restores this process.
     ; 
 
-    pushfd
+    push ebx
 
     xor ebx, ebx
     mov bx, cs
@@ -621,3 +627,21 @@ switch_context:
 
     ;Restore EIP, CS and EFLAGS.
     iretd
+
+disable_interrupts:
+
+    pushfd
+    pop eax
+
+    cli
+
+    ret
+
+restore_flags:
+
+    mov eax, [esp + 4]
+
+    push eax
+    popfd
+
+    ret
