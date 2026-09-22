@@ -17,8 +17,8 @@ static void proc_a(void)
     //kprint("Process A is running.\n");
 
     while (1) {
-        kprint("Process A is running.\n");
-        yield();
+        kprint("Process A \n");
+        //yield();
     }
 }
 
@@ -26,7 +26,7 @@ static void proc_b(void)
 {
     while (1) {
         kprint("Process B \n");
-        yield();
+        //yield();
     }
 }
 
@@ -54,6 +54,11 @@ void kernel_main(void)
     proc_create(1, "proc_b", proc_b);
 
     kprint("Process table initialized.\n");
+
+    pic_unmask_irq(0);
+
+    enable_interrupts();
+
     
     sched();
     
@@ -67,9 +72,6 @@ void kernel_main(void)
 
     
 
-    pic_unmask_irq(0);
-
-    enable_interrupts();
 
     // kprint("Triggering divide error...\n");
     // trigger_divide_error();

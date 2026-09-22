@@ -44,6 +44,7 @@ EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
 EXTERN exception_error
 EXTERN clock_handler
+EXTERN clock_schedule
 
 EXTERN __bss_start
 EXTERN __bss_end
@@ -383,26 +384,31 @@ common_error_exception_halt:
 
 clock_interrupt:
 
-    ; Save the general-purpose registers.
-    ;
-    ; The C compiler is free to modify registers while
-    ; executing clock_handler(), so preserve the interrupted
-    ; program's register state.
+    ; CPU has already pushed:
+    ;     EFLAGS, CS, EIP
 
     pushad
 
-    ; Call the C-level clock interrupt handler.
+
+    ;Preserve the address of that frame.
+    mov ebx, esp
+
+    ;Run the normal C clock handler.
 
     call clock_handler
 
-    ; Restore the interrupted register state.
+    ; clock_schedule(current_sp) - ask scheduler which process's context to be restored
+
+    push ebx ; parameter to clock_schedule
+    call clock_schedule
+    add esp, 4
+
+    ;EAX now contains the saved stack pointer of the process that should run - same or different
+
+    mov esp, eax
+
 
     popad
-
-    ; Return from the interrupt.
-    ;
-    ; IRETD restores EIP, CS and EFLAGS pushed by the CPU.
-
     iretd
 
 ; ---------------------------------------------------------

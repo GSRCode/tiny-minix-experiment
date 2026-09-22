@@ -1,4 +1,5 @@
 #include "proc.h"
+#include "console.h"
 
 struct proc proc[NR_PROCS];
 struct proc *proc_ptr;
@@ -10,6 +11,8 @@ extern void switch_context(unsigned long *old_sp,
 
 extern unsigned long disable_interrupts(void);
 extern void restore_flags(unsigned long flags);
+
+volatile int need_resched = 0;
 
 
 static void copy_name(char *dest, const char *src)
@@ -46,6 +49,9 @@ void proc_create(int nr, const char *name, void (*entry)(void))
 
     proc[nr].p_nr = nr;
     proc[nr].p_rts_flags = 0; //0 means runnable
+
+    proc[nr].p_quantum_size = DEFAULT_QUANTUM;
+    proc[nr].p_ticks_left = proc[nr].p_quantum_size;
 
     copy_name(proc[nr].p_name, name);
 
@@ -84,6 +90,10 @@ void sched(void)
 
         if (proc[nr].p_rts_flags == 0) {
             proc_ptr = &proc[nr];
+        
+            proc_ptr->p_ticks_left = proc_ptr->p_quantum_size;
+            need_resched = 0;
+            
             return;
         }
     }
@@ -118,4 +128,57 @@ void yield(void)
      */
     switch_context(&old_proc->p_sp,
                    new_proc->p_sp, flags);
+}
+
+void sched_tick(void)
+{
+    //kprint("in ssched_tick");
+    if (proc_ptr == 0)
+        return;
+
+    //Count down the current process's quantum.
+    if (proc_ptr->p_ticks_left > 0){
+        proc_ptr->p_ticks_left--;
+        //kprint_uint(proc_ptr->p_ticks_left);
+    }
+
+    //Request scheduling when the quantum expires.
+    if (proc_ptr->p_ticks_left == 0)
+    {
+        //kprint("need_resched set\n");
+        need_resched = 1;
+    }
+}
+
+unsigned long clock_schedule(unsigned long current_sp)
+{
+    //kprint("in clock_schedule\n");
+    struct proc *old_proc;
+
+    old_proc = proc_ptr;
+
+    if (old_proc != 0)
+        old_proc->p_sp = current_sp;
+
+    //If the current quantum has not expired, continue same
+    if (!need_resched)
+        return current_sp;
+
+    //Select the next runnable process.
+    sched();
+
+    //If no runnable process was found, continue with interrupted process
+    if (proc_ptr == 0) {
+        proc_ptr = old_proc;
+        need_resched = 0;
+
+        if (old_proc != 0) {
+            old_proc->p_ticks_left = old_proc->p_quantum_size;
+        }
+
+        return current_sp;
+    }
+
+    //return saved stack of new selected process
+    return proc_ptr->p_sp;
 }
