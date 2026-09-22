@@ -7,7 +7,6 @@
 extern void trigger_divide_error(void);
 extern void trigger_invalid_opcode(void);
 extern void trigger_general_protection(void);
-
 extern void enable_interrupts(void);
 extern void cpu_halt(void);
 
@@ -32,11 +31,6 @@ void kernel_main(void)
 
     enable_interrupts();
 
-    kprint("PIC initialized and IRQs masked.\n");
-
-    /*
-     * Deliberately generate exception vector 0.
-     */
     // kprint("Triggering divide error...\n");
     // trigger_divide_error();
     
@@ -46,8 +40,6 @@ void kernel_main(void)
     //kprint("Triggering general protection fault...\n");
     //trigger_general_protection();
 
-
-    kprint("Kernel ready.\n");
 
     unsigned long last_second;
 
