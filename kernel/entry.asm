@@ -35,8 +35,8 @@ GLOBAL outb
 GLOBAL inb
 GLOBAL enable_interrupts
 GLOBAL cpu_halt
-GLOBAL restart
-GLOBAL context_switch
+GLOBAL restore_context
+GLOBAL switch_context
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
@@ -546,58 +546,78 @@ cpu_halt:
     hlt
     ret
 
-restart:
-    mov eax, [proc_ptr]
 
-    ;
-    ; IMPORTANT:
-    ; p_sp offset depends on the C structure layout.
-    ;
-    ; p_reg currently occupies 60 bytes,
-    ; therefore p_sp follows it.
-    ;
-    mov esp, [eax + 60]
+restore_context:
 
+    mov eax, [esp + 4]
+
+    ; Switch to the selected process's saved frame.
+    mov esp, eax
+
+    ; Restore general-purpose registers.
     popad
-    ret
 
-; ============================================================
-; context_switch
-;
-; void context_switch(unsigned long *old_sp,
-;                     unsigned long new_sp);
-;
-; Save the current process stack pointer and load the
-; next process stack.
-; ============================================================
+    ; Restore:
+    ;
+    ; EIP
+    ; CS
+    ; EFLAGS
+    ;
+    ; and resume the process.
+    iretd
 
-context_switch:
+switch_context:
 
-    ; Save all general-purpose registers.
+    ;
+    ; On entry:
+    ;
+    ; [esp]     = return EIP
+    ; [esp + 4] = &old_proc->p_sp
+    ; [esp + 8] = new_proc->p_sp
+    ;
+
+    ; Save the new stack pointer before changing ESP.
+    mov edx, [esp + 8]
+
+    ; Save the address where old ESP must be stored.
+    mov ecx, [esp + 4]
+
+    ; Get the return address.
+    mov eax, [esp]
+
+    
+    ; We want to construct:
+    ; 
+    ; EFLAGS
+    ; CS
+    ; EIP
+    ; general registers
+    ; so that later:
+    ;      popad
+    ;      iretd
+    ; 
+    ;  restores this process.
+    ; 
+
+    pushfd
+
+    xor ebx, ebx
+    mov bx, cs
+    push ebx
+
+    push eax
+
+    ;Save general-purpose registers.
     pushad
 
-    ;
-    ; Because PUSHAD added 32 bytes:
-    ;
-    ; [esp + 36] = old_sp
-    ; [esp + 40] = new_sp
-    ;
+    ;ESP now points to the complete saved frame.
+    mov [ecx], esp
 
-    mov eax, [esp + 36]
-    mov edx, [esp + 40]
-
-    ; Save current ESP into *old_sp.
-    mov [eax], esp
-
-    ; Switch to the next process's stack.
+    ;Switch to the next process's saved frame.
     mov esp, edx
 
-    ; Restore its registers.
+    ;Restore its general-purpose registers.
     popad
 
-    ; For a previously-running process, RET returns from
-    ; its earlier context_switch() call.
-    ;
-    ; For a new process, the return address was manually
-    ; initialized to its entry function.
-    ret
+    ;Restore EIP, CS and EFLAGS.
+    iretd

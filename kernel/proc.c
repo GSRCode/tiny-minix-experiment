@@ -4,8 +4,9 @@ struct proc proc[NR_PROCS];
 struct proc *proc_ptr;
 static unsigned char proc_stack[NR_PROCS][K_STACK_SIZE];
 
-extern void context_switch(unsigned long *old_sp,
+extern void switch_context(unsigned long *old_sp,
                            unsigned long new_sp);
+
 
 static void copy_name(char *dest, const char *src)
 {
@@ -35,7 +36,7 @@ void proc_init(void)
 
 void proc_create(int nr, const char *name, void (*entry)(void))
 {
-    unsigned long* sp;
+    struct stackframe *frame;
 
     if (nr < 0 || nr >= NR_PROCS) return;
 
@@ -44,41 +45,26 @@ void proc_create(int nr, const char *name, void (*entry)(void))
 
     copy_name(proc[nr].p_name, name);
 
-    //Stack grows downward on x86. Start ESP at the top of this process's private stack
-    sp = (unsigned long *)&proc_stack[nr][K_STACK_SIZE];
+    frame = (struct stackframe *)
+        (&proc_stack[nr][K_STACK_SIZE] -
+         sizeof(struct stackframe));
 
-    /*
-    proc[nr].p_reg.esp = stack_top;
+    frame->edi = 0;
+    frame->esi = 0;
+    frame->ebp = 0;
+    frame->esp_dummy = 0;
 
-    //execution should begin at its entry function
-    proc[nr].p_reg.eip = (unsigned long)entry;
+    frame->ebx = 0;
+    frame->edx = 0;
+    frame->ecx = 0;
+    frame->eax = 0;
 
-    //current GDT uses selector 0x08 for cs
-    proc[nr].p_reg.cs = 0x08;
+    frame->eip = (unsigned long)entry;
+    frame->cs = 0x08;
+    frame->eflags = 0x202;
 
-    //Start with interrupts enabled. Bit 1 is always set and IF is bit 9.
-    proc[nr].p_reg.eflags = 0x202;
-    */
-
-    *(--sp) = (unsigned long)entry; //initial return address
-
-    /*
-     * Space for the registers restored by POPAD.
-     * POPAD restores:
-     * EDI, ESI, EBP, ignores saved ESP,
-     * EBX, EDX, ECX, EAX.
-     * All registers initially contain zero.
-     */
-    *(--sp) = 0;    /* EAX */
-    *(--sp) = 0;    /* ECX */
-    *(--sp) = 0;    /* EDX */
-    *(--sp) = 0;    /* EBX */
-    *(--sp) = 0;    /* ignored ESP value */
-    *(--sp) = 0;    /* EBP */
-    *(--sp) = 0;    /* ESI */
-    *(--sp) = 0;    /* EDI */
-
-    proc[nr].p_sp = (unsigned long)sp;
+    //p_sp points at the complete saved frame.
+    proc[nr].p_sp = (unsigned long)frame;
 }
 
 void sched(void)
@@ -120,6 +106,6 @@ void yield(void)
      * Save the old process's ESP and load
      * the new process's ESP.
      */
-    context_switch(&old_proc->p_sp,
+    switch_context(&old_proc->p_sp,
                    new_proc->p_sp);
 }

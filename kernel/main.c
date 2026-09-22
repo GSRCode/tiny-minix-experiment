@@ -10,11 +10,11 @@ extern void trigger_invalid_opcode(void);
 extern void trigger_general_protection(void);
 extern void enable_interrupts(void);
 extern void cpu_halt(void);
-extern void restart(void);
+extern void restore_context(unsigned long p_sp);
 
 static void proc_a(void)
 {
-    
+    //kprint("Process A is running.\n");
 
     while (1) {
         kprint("Process A is running.\n");
@@ -62,7 +62,7 @@ void kernel_main(void)
         kprint(proc_ptr->p_name);
         kprint("\n");
 
-        restart();
+        restore_context(proc_ptr->p_sp);
     }
 
     
@@ -80,7 +80,7 @@ void kernel_main(void)
     //kprint("Triggering general protection fault...\n");
     //trigger_general_protection();
 
-    kprint("After unmask irq and enable interrupts and restart ");
+    kprint("After unmask irq and enable interrupts and restore_context ");
 
     unsigned long last_second;
 
