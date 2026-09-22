@@ -3,12 +3,30 @@
 #include "pic.h"
 #include "pit.h"
 #include "clock.h"
+#include "proc.h"
 
 extern void trigger_divide_error(void);
 extern void trigger_invalid_opcode(void);
 extern void trigger_general_protection(void);
 extern void enable_interrupts(void);
 extern void cpu_halt(void);
+extern void restart(void);
+
+static void proc_a(void)
+{
+    kprint("Process A is running.\n");
+
+    while (1) {
+        cpu_halt();
+    }
+}
+
+static void proc_b(void)
+{
+    while (1) {
+        kprint("Process B \n");
+    }
+}
 
 
 void kernel_main(void)
@@ -27,6 +45,26 @@ void kernel_main(void)
 
     pic_init();
     pit_init(100);
+
+    proc_init();
+    
+    proc_create(0, "proc_a", proc_a);
+    proc_create(1, "proc_b", proc_b);
+
+    kprint("Process table initialized.\n");
+    
+    sched();
+    
+    if (proc_ptr != 0) {
+        kprint("Selected process: ");
+        kprint(proc_ptr->p_name);
+        kprint("\n");
+
+        restart();
+    }
+
+    
+
     pic_unmask_irq(0);
 
     enable_interrupts();
@@ -40,6 +78,7 @@ void kernel_main(void)
     //kprint("Triggering general protection fault...\n");
     //trigger_general_protection();
 
+    kprint("After unmask irq and enable interrupts and restart ");
 
     unsigned long last_second;
 

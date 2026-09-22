@@ -35,6 +35,7 @@ GLOBAL outb
 GLOBAL inb
 GLOBAL enable_interrupts
 GLOBAL cpu_halt
+GLOBAL restart
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
@@ -43,6 +44,7 @@ EXTERN clock_handler
 
 EXTERN __bss_start
 EXTERN __bss_end
+EXTERN proc_ptr
 
 ; 
 ; 16-bit real-mode entry
@@ -542,3 +544,42 @@ enable_interrupts:
 cpu_halt:
     hlt
     ret
+
+; ============================================================
+; restart
+;
+; Start the process selected by proc_ptr.
+;
+; struct proc currently begins with struct stackframe p_reg.
+;
+; stackframe offsets:
+;   esp      = 28
+;   eip      = 48
+;   cs       = 52
+;   eflags   = 56
+; ============================================================
+
+restart:
+
+    ; EAX = proc_ptr
+    mov eax, [proc_ptr]
+
+    ; Load the selected process's private stack.
+    mov esp, [eax + 28]
+
+    ; Construct the stack frame expected by IRETD.
+    ;
+    ; IRETD expects:
+    ;
+    ;     EIP
+    ;     CS
+    ;     EFLAGS
+    ;
+    ; with EIP at the top of the stack.
+
+    push dword [eax + 56]       ; EFLAGS
+    push dword [eax + 52]       ; CS
+    push dword [eax + 48]       ; EIP
+
+    ; Start the process.
+    iretd
