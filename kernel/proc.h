@@ -11,6 +11,7 @@
 
 struct proc {
     struct stackframe p_reg;
+    unsigned long p_sp; //temporary (?) varialbe to store process stack pointer
     int p_nr; //Process number
     unsigned char p_rts_flags; //Runtime status flags
     char p_name[P_NAME_LEN]; //Process name.
@@ -23,6 +24,7 @@ extern struct proc *proc_ptr; //pointer of process currently selected to run
 void proc_init(void); /* Initialize the process table.*/
 void proc_create(int nr, const char *name, void (*entry)(void));
 void sched(void);
+void yield(void);
 
 #endif
 

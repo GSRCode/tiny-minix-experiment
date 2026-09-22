@@ -14,10 +14,11 @@ extern void restart(void);
 
 static void proc_a(void)
 {
-    kprint("Process A is running.\n");
+    
 
     while (1) {
-        cpu_halt();
+        kprint("Process A is running.\n");
+        yield();
     }
 }
 
@@ -25,6 +26,7 @@ static void proc_b(void)
 {
     while (1) {
         kprint("Process B \n");
+        yield();
     }
 }
 

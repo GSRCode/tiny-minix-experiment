@@ -36,6 +36,7 @@ GLOBAL inb
 GLOBAL enable_interrupts
 GLOBAL cpu_halt
 GLOBAL restart
+GLOBAL context_switch
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
@@ -545,41 +546,58 @@ cpu_halt:
     hlt
     ret
 
-; ============================================================
-; restart
-;
-; Start the process selected by proc_ptr.
-;
-; struct proc currently begins with struct stackframe p_reg.
-;
-; stackframe offsets:
-;   esp      = 28
-;   eip      = 48
-;   cs       = 52
-;   eflags   = 56
-; ============================================================
-
 restart:
-
-    ; EAX = proc_ptr
     mov eax, [proc_ptr]
 
-    ; Load the selected process's private stack.
-    mov esp, [eax + 28]
-
-    ; Construct the stack frame expected by IRETD.
     ;
-    ; IRETD expects:
+    ; IMPORTANT:
+    ; p_sp offset depends on the C structure layout.
     ;
-    ;     EIP
-    ;     CS
-    ;     EFLAGS
+    ; p_reg currently occupies 60 bytes,
+    ; therefore p_sp follows it.
     ;
-    ; with EIP at the top of the stack.
+    mov esp, [eax + 60]
 
-    push dword [eax + 56]       ; EFLAGS
-    push dword [eax + 52]       ; CS
-    push dword [eax + 48]       ; EIP
+    popad
+    ret
 
-    ; Start the process.
-    iretd
+; ============================================================
+; context_switch
+;
+; void context_switch(unsigned long *old_sp,
+;                     unsigned long new_sp);
+;
+; Save the current process stack pointer and load the
+; next process stack.
+; ============================================================
+
+context_switch:
+
+    ; Save all general-purpose registers.
+    pushad
+
+    ;
+    ; Because PUSHAD added 32 bytes:
+    ;
+    ; [esp + 36] = old_sp
+    ; [esp + 40] = new_sp
+    ;
+
+    mov eax, [esp + 36]
+    mov edx, [esp + 40]
+
+    ; Save current ESP into *old_sp.
+    mov [eax], esp
+
+    ; Switch to the next process's stack.
+    mov esp, edx
+
+    ; Restore its registers.
+    popad
+
+    ; For a previously-running process, RET returns from
+    ; its earlier context_switch() call.
+    ;
+    ; For a new process, the return address was manually
+    ; initialized to its entry function.
+    ret
