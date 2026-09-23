@@ -14,11 +14,9 @@ extern void restore_context(unsigned long p_sp);
 
 static void proc_a(void)
 {
-    //kprint("Process A is running.\n");
 
     while (1) {
         kprint("Process A \n");
-        //yield();
     }
 }
 
@@ -26,7 +24,6 @@ static void proc_b(void)
 {
     while (1) {
         kprint("Process B \n");
-        //yield();
     }
 }
 
@@ -71,12 +68,10 @@ void kernel_main(void)
     }
 
     
-
-
-    // kprint("Triggering divide error...\n");
+    //kprint("Triggering divide error...\n");
     // trigger_divide_error();
     
-    // kprint("Triggering invalid opcode...\n");
+    //kprint("Triggering invalid opcode...\n");
     // trigger_invalid_opcode();
 
     //kprint("Triggering general protection fault...\n");

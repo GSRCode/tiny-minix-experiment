@@ -36,7 +36,6 @@ GLOBAL inb
 GLOBAL enable_interrupts
 GLOBAL cpu_halt
 GLOBAL restore_context
-GLOBAL switch_context
 GLOBAL disable_interrupts
 GLOBAL restore_flags
 
@@ -574,65 +573,6 @@ restore_context:
     ; and resume the process.
     iretd
 
-switch_context:
-
-    ;
-    ; On entry:
-    ;
-    ; [esp]     = return EIP
-    ; [esp + 4] = &old_proc->p_sp
-    ; [esp + 8] = new_proc->p_sp
-    ; [esp + 12] original EFLAGS
-    ;
-
-    ; Save the new stack pointer before changing ESP.
-    mov edx, [esp + 8]
-
-    ; Save the address where old ESP must be stored.
-    mov ecx, [esp + 4]
-
-    ; Get the return address.
-    mov eax, [esp]
-
-    ; Original EFLAGS from before CLI.
-    mov ebx, [esp + 12]
-
-    
-    ; We want to construct:
-    ; 
-    ; EFLAGS
-    ; CS
-    ; EIP
-    ; general registers
-    ; so that later:
-    ;      popad
-    ;      iretd
-    ; 
-    ;  restores this process.
-    ; 
-
-    push ebx
-
-    xor ebx, ebx
-    mov bx, cs
-    push ebx
-
-    push eax
-
-    ;Save general-purpose registers.
-    pushad
-
-    ;ESP now points to the complete saved frame.
-    mov [ecx], esp
-
-    ;Switch to the next process's saved frame.
-    mov esp, edx
-
-    ;Restore its general-purpose registers.
-    popad
-
-    ;Restore EIP, CS and EFLAGS.
-    iretd
 
 disable_interrupts:
 

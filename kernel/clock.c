@@ -7,7 +7,6 @@ volatile unsigned long clock_ticks = 0;
 
 void clock_handler(void)
 {
-    //kprint("in clock_handler");
     clock_ticks++;
 
     sched_tick();

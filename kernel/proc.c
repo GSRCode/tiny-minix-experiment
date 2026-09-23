@@ -5,10 +5,6 @@ struct proc proc[NR_PROCS];
 struct proc *proc_ptr;
 static unsigned char proc_stack[NR_PROCS][K_STACK_SIZE];
 
-extern void switch_context(unsigned long *old_sp,
-                           unsigned long new_sp,
-                           unsigned long old_flags);
-
 extern unsigned long disable_interrupts(void);
 extern void restore_flags(unsigned long flags);
 
@@ -102,67 +98,36 @@ void sched(void)
     proc_ptr = 0;
 }
 
-void yield(void)
-{
-    struct proc *old_proc;
-    struct proc *new_proc;
-    unsigned long flags;
-
-    flags = disable_interrupts();
-
-    old_proc = proc_ptr;
-
-    sched(); //Select the next runnable process.
-
-    new_proc = proc_ptr;
-
-    if (new_proc == 0 || new_proc == old_proc) //Nothing to switch to
-    {
-        restore_flags(flags);
-        return;
-    }
-
-    /*
-     * Save the old process's ESP and load
-     * the new process's ESP.
-     */
-    switch_context(&old_proc->p_sp,
-                   new_proc->p_sp, flags);
-}
 
 void sched_tick(void)
 {
-    //kprint("in ssched_tick");
     if (proc_ptr == 0)
         return;
 
     //Count down the current process's quantum.
     if (proc_ptr->p_ticks_left > 0){
         proc_ptr->p_ticks_left--;
-        //kprint_uint(proc_ptr->p_ticks_left);
     }
 
     //Request scheduling when the quantum expires.
     if (proc_ptr->p_ticks_left == 0)
     {
-        //kprint("need_resched set\n");
         need_resched = 1;
     }
 }
 
 unsigned long clock_schedule(unsigned long current_sp)
 {
-    //kprint("in clock_schedule\n");
     struct proc *old_proc;
 
+     //If the current quantum has not expired, continue same
+    if (!need_resched)
+        return current_sp;
+   
     old_proc = proc_ptr;
 
     if (old_proc != 0)
         old_proc->p_sp = current_sp;
-
-    //If the current quantum has not expired, continue same
-    if (!need_resched)
-        return current_sp;
 
     //Select the next runnable process.
     sched();
