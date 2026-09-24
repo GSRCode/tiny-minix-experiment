@@ -15,6 +15,10 @@ void proc_init(void)
         proc[i].p_name[0] = '\0';
         proc[i].p_priority = USER_Q;
         proc[i].p_nextready = 0;
+        
+        proc[i].p_sendto = -1;
+        proc[i].p_caller_q = 0;
+        proc[i].p_q_link = 0;
 
         p = (unsigned char *)&proc[i].p_reg;
         for (j = 0; j < sizeof(struct stackframe); j++) p[j] = 0;

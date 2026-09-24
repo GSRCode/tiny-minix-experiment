@@ -38,12 +38,16 @@ GLOBAL cpu_halt
 GLOBAL restore_context
 GLOBAL disable_interrupts
 GLOBAL restore_flags
+global ipc_entry
+
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
 EXTERN exception
 EXTERN exception_error
 EXTERN clock_handler
 EXTERN clock_schedule
+extern sys_call
+
 
 EXTERN __bss_start
 EXTERN __bss_end
@@ -591,3 +595,18 @@ restore_flags:
     popfd
 
     ret
+
+ipc_entry:
+    pushad
+
+    ; ESP now points to the saved stackframe.
+    push esp
+    call sys_call
+    add esp, 4
+
+    ; sys_call returns the selected process's
+    ; saved stack pointer in EAX.
+    mov esp, eax
+
+    popad
+    iretd

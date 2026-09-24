@@ -14,6 +14,9 @@ struct proc {
     struct proc *p_nextready; //p_nextready forms the linked list.
     unsigned char p_rts_flags;
     char p_name[P_NAME_LEN];
+    int p_sendto; //who am I sending to?
+    struct proc *p_caller_q; // who is waiting to send to me?
+    struct proc *p_q_link;  //next sender in that queue
 };
 
 #endif

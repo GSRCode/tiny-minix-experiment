@@ -3,6 +3,7 @@
 
 struct desctableptr_s;
 struct proc;
+struct stackframe;
 
 /* Kernel and demonstration processes. */
 void kernel_main(void);
@@ -19,6 +20,9 @@ unsigned long clock_schedule(unsigned long current_sp);
 void enqueue(struct proc *rp);
 void dequeue(struct proc *rp);
 void pick_proc(void);
+int mini_send(struct proc *caller, int dst_nr);
+unsigned long sys_call(struct stackframe *frame);
+void ipc_entry(void);
 
 /* Clock. */
 void clock_handler(void);

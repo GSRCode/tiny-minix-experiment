@@ -9,7 +9,8 @@ void prot_init(void)
         { divide_error, DIVIDE_VECTOR, INTR_PRIVILEGE },
         { invalid_opcode, INVALID_OPCODE_VECTOR, INTR_PRIVILEGE },
         { general_protection, GENERAL_PROTECTION_VECTOR, INTR_PRIVILEGE },
-        { clock_interrupt, PIC_MASTER_OFFSET, INTR_PRIVILEGE }
+        { clock_interrupt, PIC_MASTER_OFFSET, INTR_PRIVILEGE },
+        { ipc_entry, SYS386_VECTOR, INTR_PRIVILEGE}
     };
     unsigned int i;
     for (i = 0; i < sizeof(gate_table) / sizeof(gate_table[0]); i++) {
