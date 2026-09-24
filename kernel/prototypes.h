@@ -1,7 +1,8 @@
 #ifndef PROTOTYPES_H
 #define PROTOTYPES_H
 
-#include "descriptor.h"
+struct desctableptr_s;
+struct proc;
 
 /* Kernel and demonstration processes. */
 void kernel_main(void);
@@ -15,6 +16,9 @@ void proc_create(int nr, const char *name, void (*entry)(void));
 void sched(void);
 void sched_tick(void);
 unsigned long clock_schedule(unsigned long current_sp);
+void enqueue(struct proc *rp);
+void dequeue(struct proc *rp);
+void pick_proc(void);
 
 /* Clock. */
 void clock_handler(void);

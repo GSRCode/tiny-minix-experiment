@@ -7,6 +7,8 @@ void proc_create(int nr, const char *name, void (*entry)(void))
     if (nr < 0 || nr >= NR_PROCS) return;
     proc[nr].p_nr = nr;
     proc[nr].p_rts_flags = 0;
+    proc[nr].p_priority = USER_Q;
+    proc[nr].p_nextready = 0;
     proc[nr].p_quantum_size = DEFAULT_QUANTUM;
     proc[nr].p_ticks_left = proc[nr].p_quantum_size;
     copy_name(proc[nr].p_name, name);
@@ -17,4 +19,6 @@ void proc_create(int nr, const char *name, void (*entry)(void))
     frame->cs = 0x08;
     frame->eflags = 0x202;
     proc[nr].p_sp = (unsigned long)frame;
+    enqueue(&proc[nr]);
 }
+

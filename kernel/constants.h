@@ -42,4 +42,8 @@
 #define CS_SELECTOR 0x08
 #define IDT_SIZE 256
 
+#define NR_SCHED_QUEUES 16
+#define USER_Q 7
+#define IDLE_Q 15
+
 #endif
