@@ -36,6 +36,7 @@ GLOBAL inb
 GLOBAL enable_interrupts
 GLOBAL cpu_halt
 GLOBAL restore_context
+GLOBAL delay
 GLOBAL disable_interrupts
 GLOBAL restore_flags
 global ipc_entry
@@ -557,6 +558,26 @@ cpu_halt:
     hlt
     ret
 
+
+
+
+; void delay(unsigned int count);
+;
+; count is passed on the stack:
+; [esp + 4] = count
+
+delay:
+    push ebp
+    mov  ebp, esp
+
+    mov  ecx, [ebp + 8]
+
+.loop:
+    nop
+    loop .loop
+
+    pop  ebp
+    ret
 
 restore_context:
 

@@ -35,5 +35,10 @@ int mini_receive(struct proc *caller, int src_nr)
         sender = sender->p_q_link;
     }
 
-    return -1;
+    //block waiting for caller
+    caller->p_getfrom = src_nr;
+    caller->p_rts_flags |= RECEIVING;
+    dequeue(caller);
+    
+    return 0;
 }

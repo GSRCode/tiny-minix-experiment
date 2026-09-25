@@ -15,6 +15,18 @@ int mini_send(struct proc *caller, int dst_nr)
     if (dst->p_rts_flags & SLOT_FREE)
         return -1;
 
+    //Is the destination already waiting to receive from this caller?
+    if ((dst->p_rts_flags & RECEIVING) && (dst->p_getfrom == caller->p_nr)) 
+    {
+        //send and receive has matched
+        dst->p_getfrom = -1;
+        dst->p_rts_flags &= ~RECEIVING;
+
+        if (dst->p_rts_flags == 0) enqueue(dst);
+
+        return 0; //sender does not block as receiver was waiting
+    }
+
     /*
      * Caller is now blocked trying to send
      * to dst_nr.

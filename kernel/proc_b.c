@@ -12,8 +12,9 @@ void proc_b(void)
         : "eax", "ebx"
     );
 
-    kprint("Process B after RECEIVE \n");
+    delay(1999999999);
 
+    kprint("Process B after RECEIVE\n");
 
     for (;;) {
         //kprint("B ");

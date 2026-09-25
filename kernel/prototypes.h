@@ -59,6 +59,7 @@ void trigger_general_protection(void);
 void enable_interrupts(void);
 void cpu_halt(void);
 void restore_context(unsigned long p_sp);
+void delay(unsigned long secs);
 unsigned long disable_interrupts(void);
 void restore_flags(unsigned long flags);
 void idt_load(struct desctableptr_s *ptr);

@@ -15,6 +15,7 @@ struct proc {
     unsigned char p_rts_flags;
     char p_name[P_NAME_LEN];
     int p_sendto; //who am I sending to?
+    int p_getfrom;   // Who am I waiting to receive from? 
     struct proc *p_caller_q; // who is waiting to send to me?
     struct proc *p_q_link;  //next sender in that queue
 };

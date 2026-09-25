@@ -3,12 +3,16 @@
 
 /* Process constants. */
 #define NR_PROCS 4
+
 #define SLOT_FREE 0x01
 #define SENDING 0x02
+#define RECEIVING 0x04
+
 #define P_NAME_LEN 16
 #define K_STACK_SIZE 1024
 #define DEFAULT_QUANTUM 50
 #define SYS386_VECTOR 0x80
+
 #define SEND 1
 #define RECEIVE 2
 
