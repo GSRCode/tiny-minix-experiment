@@ -15,6 +15,7 @@
 
 #define SEND 1
 #define RECEIVE 2
+#define SENDREC  3
 #define ANY (-1)
 
 #define E_DEADLOCK (-2)

@@ -31,6 +31,7 @@ int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr)
 
     //check if destination process is trying to send to us down the chain, if so return
     if (deadlock(caller->p_nr, dst_nr)) return E_DEADLOCK;
+    
 
     //Caller is now blocked trying to send to dst_nr. 
     caller->p_sendto = dst_nr;
