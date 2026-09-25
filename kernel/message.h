@@ -3,6 +3,7 @@
 
 struct message {
     int m_source;
+     int m_type;
     int m_value;
 };
 

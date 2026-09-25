@@ -16,7 +16,11 @@
 #define SEND 1
 #define RECEIVE 2
 #define SENDREC  3
+#define NOTIFY   4
 #define ANY (-1)
+
+#define NORMAL_MESSAGE  0
+#define NOTIFY_MESSAGE  1
 
 #define E_DEADLOCK (-2)
 

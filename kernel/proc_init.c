@@ -21,8 +21,10 @@ void proc_init(void)
         proc[i].p_messbuf = 0;
         proc[i].p_caller_q = 0;
         proc[i].p_q_link = 0;
-        
+
         proc[i].p_sendrec = 0;
+
+        proc[i].p_pending_notify = 0;
 
         p = (unsigned char *)&proc[i].p_reg;
         for (j = 0; j < sizeof(struct stackframe); j++) p[j] = 0;

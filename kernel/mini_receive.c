@@ -6,8 +6,35 @@ int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr)
 {
     struct proc *sender;
     struct proc *previous;
-    struct proc *p;
+    
+    int i;
 
+    //First check whether there is a pending notification.
+    //RECEIVE(ANY) accepts a notification from any process.
+    //RECEIVE(src_nr) accepts only a notification from src_nr.
+    
+    for (i = 0; i < NR_PROCS; i++) {
+
+        if (caller->p_pending_notify & (1U << i)) {
+
+            if (src_nr == ANY || src_nr == i) {
+
+                //Remove this notification from the pending notification bitmap.
+                caller->p_pending_notify &= ~(1U << i);
+
+                //Construct the notification message.
+                m_ptr->m_source = i;
+                m_ptr->m_type = NOTIFY_MESSAGE;
+                m_ptr->m_value = 0;
+
+                return 0;
+            }
+        }
+    }
+
+     
+    //No matching pending notification.
+    
     //walk the linked list of senders in caller->p_caller_q; and remove process src_nr (sender)
     sender = caller->p_caller_q;
     previous = 0;
@@ -39,18 +66,6 @@ int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr)
 
                 //Keep p_messbuf? yes, this is sendrec not send
 
-                //since sender will receive back during SENDREC, 
-                // I (receiver) need to put myself on sender's queue 
-                //no deadlock is caused as sender is ~SENDING but  |= RECEIVING
-                //no not required as sender is wating in SENDREC mode
-                /*
-                if (sender->p_caller_q == 0) { sender->p_caller_q = caller;} 
-                else {
-                    p = sender->p_caller_q;
-                    while (p->p_q_link != 0) p = p->p_q_link;
-                    p->p_q_link = caller;
-                }
-                */
 
             } else {
                 

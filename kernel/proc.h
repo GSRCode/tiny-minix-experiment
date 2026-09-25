@@ -21,6 +21,7 @@ struct proc {
     struct proc *p_caller_q; // who is waiting to send to me?
     struct proc *p_q_link;  //next sender in that queue
     int p_sendrec; //send and receive?
+    unsigned int p_pending_notify;
 };
 
 #endif

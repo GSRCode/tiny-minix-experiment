@@ -32,6 +32,11 @@ unsigned long sys_call(struct stackframe *frame)
         
         //if mini_sendrec blocked caller, choose another proc
         if (caller->p_rts_flags != 0) pick_proc();
+    } else if (frame->eax == NOTIFY) {
+        
+        result = mini_notify(caller, (int) frame->ebx);
+        
+        frame->eax = result;
     }    
 
     //Return the stack pointer of the process that should run
