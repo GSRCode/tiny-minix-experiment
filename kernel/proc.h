@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "stackframe.h"
+#include "message.h"
 
 struct proc {
     struct stackframe p_reg;
@@ -16,6 +17,7 @@ struct proc {
     char p_name[P_NAME_LEN];
     int p_sendto; //who am I sending to?
     int p_getfrom;   // Who am I waiting to receive from? 
+    struct message *p_messbuf;
     struct proc *p_caller_q; // who is waiting to send to me?
     struct proc *p_q_link;  //next sender in that queue
 };

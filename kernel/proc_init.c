@@ -18,6 +18,7 @@ void proc_init(void)
         
         proc[i].p_sendto = -1;
         proc[i].p_getfrom = -1;
+        proc[i].p_messbuf = 0;
         proc[i].p_caller_q = 0;
         proc[i].p_q_link = 0;
 

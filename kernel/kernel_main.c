@@ -12,9 +12,11 @@ void kernel_main(void)
     pit_init(100);
     proc_init();
     
-    proc_create(1, "proc_b", proc_b);
     proc_create(0, "proc_a", proc_a);
+    proc_create(1, "proc_b", proc_b);
     
+    
+
     kprint("Process table initialized.\n");
     pic_unmask_irq(0);
     enable_interrupts();

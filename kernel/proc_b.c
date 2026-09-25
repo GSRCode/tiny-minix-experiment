@@ -1,23 +1,29 @@
 #include "prototypes.h"
+#include "message.h"
+
 void proc_b(void)
 {
-    kprint("Process B starting...\n");
+    struct message msg;
+
+    kprint("Process B before RECEIVE\n");
 
     __asm__ volatile (
         "movl $2, %%eax\n\t"
         "movl $0, %%ebx\n\t"
+        "movl %0, %%ecx\n\t"
         "int $0x80"
         :
-        :
-        : "eax", "ebx"
+        : "r" (&msg)
+        : "eax", "ebx", "ecx"
     );
 
-    delay(1999999999);
+    kprint("Process B received message\n");
 
-    kprint("Process B after RECEIVE\n");
+    if (msg.m_value == 1234)
+        kprint("MESSAGE VALUE = 1234 - SUCCESS\n");
+    else
+        kprint("MESSAGE VALUE INCORRECT\n");
 
     for (;;) {
-        //kprint("B ");
     }
 }
-

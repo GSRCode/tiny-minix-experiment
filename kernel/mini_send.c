@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "prototypes.h"
 
-int mini_send(struct proc *caller, int dst_nr)
+int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr)
 {
     struct proc *dst;
     struct proc *p;
@@ -19,6 +19,7 @@ int mini_send(struct proc *caller, int dst_nr)
     if ((dst->p_rts_flags & RECEIVING) && (dst->p_getfrom == caller->p_nr)) 
     {
         //send and receive has matched
+        *(dst->p_messbuf) = *m_ptr;
         dst->p_getfrom = -1;
         dst->p_rts_flags &= ~RECEIVING;
 
@@ -32,6 +33,7 @@ int mini_send(struct proc *caller, int dst_nr)
      * to dst_nr.
      */
     caller->p_sendto = dst_nr;
+    caller->p_messbuf = m_ptr;
     caller->p_rts_flags |= SENDING;
 
     /*

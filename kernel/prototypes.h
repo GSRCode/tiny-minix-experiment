@@ -4,6 +4,7 @@
 struct desctableptr_s;
 struct proc;
 struct stackframe;
+struct message;
 
 /* Kernel and demonstration processes. */
 void kernel_main(void);
@@ -20,8 +21,8 @@ unsigned long clock_schedule(unsigned long current_sp);
 void enqueue(struct proc *rp);
 void dequeue(struct proc *rp);
 void pick_proc(void);
-int mini_send(struct proc *caller, int dst_nr);
-int mini_receive(struct proc *caller, int src_nr);
+int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr);
+int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr);
 unsigned long sys_call(struct stackframe *frame);
 void ipc_entry(void);
 

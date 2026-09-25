@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "descriptor.h"
 #include "proc.h"
+#include "message.h"
 
 extern struct proc proc[NR_PROCS];
 extern struct proc *proc_ptr;

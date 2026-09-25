@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "prototypes.h"
 
-int mini_receive(struct proc *caller, int src_nr)
+int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr)
 {
     struct proc *sender;
     struct proc *previous;
@@ -19,6 +19,8 @@ int mini_receive(struct proc *caller, int src_nr)
             else previous->p_q_link = sender->p_q_link;
 
             sender->p_q_link = 0;
+            *m_ptr = *(sender->p_messbuf);
+            sender->p_messbuf = 0;
 
             //sender not blocked
             sender->p_sendto = -1;
@@ -37,6 +39,7 @@ int mini_receive(struct proc *caller, int src_nr)
 
     //block waiting for caller
     caller->p_getfrom = src_nr;
+    caller->p_messbuf = m_ptr;
     caller->p_rts_flags |= RECEIVING;
     dequeue(caller);
     
