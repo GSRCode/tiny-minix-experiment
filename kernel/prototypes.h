@@ -21,6 +21,7 @@ void enqueue(struct proc *rp);
 void dequeue(struct proc *rp);
 void pick_proc(void);
 int mini_send(struct proc *caller, int dst_nr);
+int mini_receive(struct proc *caller, int src_nr);
 unsigned long sys_call(struct stackframe *frame);
 void ipc_entry(void);
 

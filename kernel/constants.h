@@ -10,6 +10,7 @@
 #define DEFAULT_QUANTUM 50
 #define SYS386_VECTOR 0x80
 #define SEND 1
+#define RECEIVE 2
 
 
 /* VGA text mode constants. */

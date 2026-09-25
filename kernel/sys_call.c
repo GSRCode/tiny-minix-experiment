@@ -19,6 +19,8 @@ unsigned long sys_call(struct stackframe *frame)
         if (caller->p_rts_flags != 0) {
             pick_proc();
         }
+    } else if (frame->eax == RECEIVE){
+        mini_receive(caller, (int) frame->ebx);
     }
 
     /*
