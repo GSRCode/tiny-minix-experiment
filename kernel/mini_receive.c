@@ -13,7 +13,7 @@ int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr)
 
     while (sender != 0) {
 
-        if (sender->p_nr == src_nr) {
+        if (src_nr == ANY || sender->p_nr == src_nr) { 
 
             if (previous == 0) caller->p_caller_q = sender->p_q_link;
             else previous->p_q_link = sender->p_q_link;

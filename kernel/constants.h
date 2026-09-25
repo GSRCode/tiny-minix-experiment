@@ -15,7 +15,7 @@
 
 #define SEND 1
 #define RECEIVE 2
-
+#define ANY (-1)
 
 /* VGA text mode constants. */
 #define VGA_WIDTH 80

@@ -16,7 +16,8 @@ int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr)
         return -1;
 
     //Is the destination already waiting to receive from this caller?
-    if ((dst->p_rts_flags & RECEIVING) && (dst->p_getfrom == caller->p_nr)) 
+    if ((dst->p_rts_flags & RECEIVING) && 
+    (dst->p_getfrom == ANY || dst->p_getfrom == caller->p_nr)) 
     {
         //send and receive has matched
         *(dst->p_messbuf) = *m_ptr;

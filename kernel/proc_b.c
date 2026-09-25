@@ -9,7 +9,7 @@ void proc_b(void)
 
     __asm__ volatile (
         "movl $2, %%eax\n\t"
-        "movl $0, %%ebx\n\t"
+        "movl $-1, %%ebx\n\t"
         "movl %0, %%ecx\n\t"
         "int $0x80"
         :
