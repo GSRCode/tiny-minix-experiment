@@ -5,12 +5,16 @@
 unsigned long sys_call(struct stackframe *frame)
 {
     struct proc *caller;
+    int result;
 
     caller = proc_ptr;
 
     caller->p_sp = (unsigned long) frame;
     if (frame->eax == SEND) {
-        mini_send(caller, (int) frame->ebx, (struct message *)frame->ecx);
+        result = mini_send(caller, (int) frame->ebx, (struct message *)frame->ecx);
+
+        //because sys_call's return value will be in eax which will be a stack pointer for context switch
+        frame->eax = result; 
 
         // if mini_send() blocked the caller choose another process
         if (caller->p_rts_flags != 0) {
@@ -19,7 +23,7 @@ unsigned long sys_call(struct stackframe *frame)
     } else if (frame->eax == RECEIVE){
         mini_receive(caller, (int) frame->ebx, (struct message *)frame->ecx);
 
-        // if mini_send() blocked the caller choose another process
+        // if mini_receive() blocked the caller choose another process
         if (caller->p_rts_flags != 0) {
             pick_proc();
         }

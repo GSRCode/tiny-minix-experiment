@@ -25,6 +25,7 @@ int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr);
 int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr);
 unsigned long sys_call(struct stackframe *frame);
 void ipc_entry(void);
+int deadlock(int src_nr, int dst_nr);
 
 /* Clock. */
 void clock_handler(void);

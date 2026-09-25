@@ -29,33 +29,25 @@ int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr)
         return 0; //sender does not block as receiver was waiting
     }
 
-    /*
-     * Caller is now blocked trying to send
-     * to dst_nr.
-     */
+    //check if destination process is trying to send to us down the chain, if so return
+    if (deadlock(caller->p_nr, dst_nr)) return E_DEADLOCK;
+
+    //Caller is now blocked trying to send to dst_nr. 
     caller->p_sendto = dst_nr;
     caller->p_messbuf = m_ptr;
     caller->p_rts_flags |= SENDING;
 
-    /*
-     * A blocked process must not remain
-     * on a ready queue.
-     */
+    //A blocked process must not remain on a ready queue.
     dequeue(caller);
 
-    /*
-     * Add caller to destination's sender queue.
-     */
+
+    //Add caller to destination's sender queue.
     caller->p_q_link = 0;
 
-    if (dst->p_caller_q == 0) {
-        dst->p_caller_q = caller;
-    } else {
+    if (dst->p_caller_q == 0) { dst->p_caller_q = caller;} 
+    else {
         p = dst->p_caller_q;
-
-        while (p->p_q_link != 0)
-            p = p->p_q_link;
-
+        while (p->p_q_link != 0) p = p->p_q_link;
         p->p_q_link = caller;
     }
 

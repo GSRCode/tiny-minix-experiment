@@ -17,6 +17,8 @@
 #define RECEIVE 2
 #define ANY (-1)
 
+#define E_DEADLOCK (-2)
+
 /* VGA text mode constants. */
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
