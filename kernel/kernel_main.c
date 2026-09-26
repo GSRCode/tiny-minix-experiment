@@ -12,8 +12,9 @@ void kernel_main(void)
     pit_init(100);
     proc_init();
     
-    proc_create(0, "proc_a", proc_a);
     proc_create(1, "proc_b", proc_b);
+    proc_create(0, "proc_a", proc_a);
+    
     proc_create(2, "proc_c", proc_c);
     
     
