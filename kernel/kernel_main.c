@@ -14,6 +14,7 @@ void kernel_main(void)
     
     proc_create(0, "proc_a", proc_a);
     proc_create(1, "proc_b", proc_b);
+    proc_create(2, "proc_c", proc_c);
     
     
     kprint("Process table initialized.\n");

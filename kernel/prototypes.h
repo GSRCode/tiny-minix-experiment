@@ -10,6 +10,7 @@ struct message;
 void kernel_main(void);
 void proc_a(void);
 void proc_b(void);
+void proc_c(void);
 
 /* Process management and scheduling. */
 void copy_name(char *dest, const char *src);

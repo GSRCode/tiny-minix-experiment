@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 /* Process constants. */
-#define NR_PROCS 4
+#define NR_PROCS 32
 
 #define SLOT_FREE 0x01
 #define SENDING 0x02
