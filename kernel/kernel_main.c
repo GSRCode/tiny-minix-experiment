@@ -19,7 +19,8 @@ void kernel_main(void)
     
     
     kprint("Process table initialized.\n");
-    pic_unmask_irq(0);
+    pic_unmask_irq(0); //clock
+    pic_unmask_irq(1); //keyboard
     enable_interrupts();
     sched();
     if (proc_ptr != 0) {

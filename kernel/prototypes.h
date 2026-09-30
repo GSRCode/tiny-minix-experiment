@@ -39,6 +39,10 @@ unsigned long get_uptime_seconds(void);
 /* Kernel system calls. */
 unsigned long system_call(int call_nr);
 
+/*keyboard*/
+void keyboard_interrupt(void);
+void keyboard_handler(void);
+
 /* Console. */
 void console_clear(void);
 void kprint(const char *message);

@@ -28,6 +28,9 @@
 #define NORMAL_MESSAGE  0
 #define NOTIFY_MESSAGE  1
 
+#define KEYBOARD_IRQ       1
+#define KEYBOARD_DATA_PORT 0x60
+
 /* VGA text mode constants. */
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25

@@ -40,6 +40,8 @@ GLOBAL delay
 GLOBAL disable_interrupts
 GLOBAL restore_flags
 global kernel_call_entry
+global keyboard_interrupt
+
 
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
@@ -48,6 +50,7 @@ EXTERN exception_error
 EXTERN clock_handler
 EXTERN clock_schedule
 extern sys_call
+extern keyboard_handler
 
 
 EXTERN __bss_start
@@ -528,6 +531,7 @@ outb:
 
 inb:
     mov edx, [esp + 4]
+    xor eax, eax
     in al, dx
     ret
 
@@ -628,6 +632,15 @@ kernel_call_entry:
     ; sys_call returns the selected process's
     ; saved stack pointer in EAX.
     mov esp, eax
+
+    popad
+    iretd
+
+
+keyboard_interrupt:
+    pushad
+
+    call keyboard_handler
 
     popad
     iretd
