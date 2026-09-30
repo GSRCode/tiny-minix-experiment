@@ -45,7 +45,12 @@ void proc_a(void)
 
     unsigned long ticks;
 
-    ticks = system_call(SYS_GETUPTIME);
+    __asm__ volatile (
+    "movl %1, %%eax\n\t"
+    "int $0x80"
+    : "=a" (ticks)
+    : "i" (SYS_GETUPTIME)
+    : "ebx", "ecx");
 
     kprint("A: uptime ticks = ");
     kprint_uint(ticks);

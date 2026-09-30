@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "prototypes.h"
 #include "stackframe.h"
 #include "globals.h"
@@ -10,35 +11,33 @@ unsigned long sys_call(struct stackframe *frame)
     caller = proc_ptr;
 
     caller->p_sp = (unsigned long) frame;
+
     if (frame->eax == SEND) {
-        result = mini_send(caller, (int) frame->ebx, (struct message *)frame->ecx);
 
-        //because sys_call's return value will be in eax which will be a stack pointer for context switch
-        frame->eax = result; 
+        frame->eax = mini_send(caller, (int) frame->ebx, (struct message *) frame->ecx);
 
-        // if mini_send() blocked the caller choose another process
         if (caller->p_rts_flags != 0) pick_proc();
-    
-    } else if (frame->eax == RECEIVE){
-        mini_receive(caller, (int) frame->ebx, (struct message *)frame->ecx);
 
-        // if mini_receive() blocked the caller choose another process
+    } else if (frame->eax == RECEIVE) {
+
+        frame->eax = mini_receive(caller, (int) frame->ebx, (struct message *) frame->ecx);
+
         if (caller->p_rts_flags != 0) pick_proc();
 
     } else if (frame->eax == SENDREC) {
-        result = mini_sendrec(caller, (int) frame->ebx, (struct message *) frame->ecx);
-        
-        frame->eax = result;
-        
-        //if mini_sendrec blocked caller, choose another proc
-        if (caller->p_rts_flags != 0) pick_proc();
-    } else if (frame->eax == NOTIFY) {
-        
-        result = mini_notify(caller, (int) frame->ebx);
-        
-        frame->eax = result;
-    }    
 
-    //Return the stack pointer of the process that should run
+        frame->eax = mini_sendrec(caller, (int) frame->ebx, (struct message *) frame->ecx);
+
+        if (caller->p_rts_flags != 0) pick_proc();
+
+    } else if (frame->eax == NOTIFY) {
+
+        frame->eax = mini_notify(caller, (int) frame->ebx);
+
+    } else if (frame->eax == SYS_GETUPTIME) {
+
+        frame->eax = system_call(SYS_GETUPTIME);
+    }
+
     return proc_ptr->p_sp;
 }

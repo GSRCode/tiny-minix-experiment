@@ -39,7 +39,7 @@ GLOBAL restore_context
 GLOBAL delay
 GLOBAL disable_interrupts
 GLOBAL restore_flags
-global ipc_entry
+global kernel_call_entry
 
 
 EXTERN kernel_main              ; kernel_main() is defined in main.c
@@ -617,7 +617,7 @@ restore_flags:
 
     ret
 
-ipc_entry:
+kernel_call_entry:
     pushad
 
     ; ESP now points to the saved stackframe.

@@ -13,20 +13,20 @@
 #define DEFAULT_QUANTUM 50
 #define SYS386_VECTOR 0x80
 
-#define SEND 1
-#define RECEIVE 2
-#define SENDREC  3
-#define NOTIFY   4
-#define ANY (-1)
+#define SEND       1
+#define RECEIVE    2
+#define SENDREC    3
+#define NOTIFY     4
+
+#define ANY        (-1)
 #define E_DEADLOCK (-2)
-#define NONE (-3)
+#define NONE       (-3)
+
+/* Kernel system calls. */
+#define SYS_GETUPTIME  10
 
 #define NORMAL_MESSAGE  0
 #define NOTIFY_MESSAGE  1
-
-/* Kernel system calls. */
-#define SYS_GETUPTIME  1
-
 
 /* VGA text mode constants. */
 #define VGA_WIDTH 80
