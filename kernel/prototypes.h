@@ -33,6 +33,12 @@ int deadlock(int src_nr, int dst_nr);
 /* Clock. */
 void clock_handler(void);
 
+unsigned long get_uptime_ticks(void);
+unsigned long get_uptime_seconds(void);
+
+/* Kernel system calls. */
+unsigned long system_call(int call_nr);
+
 /* Console. */
 void console_clear(void);
 void kprint(const char *message);

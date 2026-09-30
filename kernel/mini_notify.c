@@ -22,7 +22,7 @@ int mini_notify(struct proc *caller, int dst_nr)
         dst->p_messbuf->m_type = NOTIFY_MESSAGE;
         dst->p_messbuf->m_value = 0;
 
-        dst->p_getfrom = -1;
+        dst->p_getfrom = NONE;
         //this does not mean messbuf is deleted, 
         // just means process structure need not hold pointer to message buffer anymore
         dst->p_messbuf = 0; 

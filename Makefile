@@ -32,12 +32,12 @@ kernel.bin: kernel.elf
 	$(OBJCOPY) -O binary $< $@
 	stat -c %s $@
 	@SIZE=$$(stat -c %s $@); \
-	if [ $$SIZE -gt 8192 ]; then \
+	if [ $$SIZE -gt 16384 ]; then \
 	    echo "ERROR: kernel.bin is $$SIZE bytes"; \
-	    echo "Maximum kernel size is 8192 bytes"; \
+	    echo "Maximum kernel size is 16384 bytes"; \
 	    rm -f $@; exit 1; \
 	fi
-	truncate -s 8192 $@
+	truncate -s 16384 $@
 
 boot3.bin: stage1.bin stage2.bin kernel.bin
 	cat $^ > $@

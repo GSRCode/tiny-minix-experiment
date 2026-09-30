@@ -18,11 +18,15 @@
 #define SENDREC  3
 #define NOTIFY   4
 #define ANY (-1)
+#define E_DEADLOCK (-2)
+#define NONE (-3)
 
 #define NORMAL_MESSAGE  0
 #define NOTIFY_MESSAGE  1
 
-#define E_DEADLOCK (-2)
+/* Kernel system calls. */
+#define SYS_GETUPTIME  1
+
 
 /* VGA text mode constants. */
 #define VGA_WIDTH 80

@@ -43,6 +43,14 @@ void proc_a(void)
     if (msg.m_type == NOTIFY_MESSAGE)
         kprint("A received pending notification - SUCCESS\n");
 
+    unsigned long ticks;
+
+    ticks = system_call(SYS_GETUPTIME);
+
+    kprint("A: uptime ticks = ");
+    kprint_uint(ticks);
+    kprint("\n");
+
     for (;;) {
     }
 }

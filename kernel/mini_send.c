@@ -21,7 +21,7 @@ int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr)
     {
         //send and receive has matched
         *(dst->p_messbuf) = *m_ptr;
-        dst->p_getfrom = -1;
+        dst->p_getfrom = NONE;
         dst->p_rts_flags &= ~RECEIVING;
 
         if (dst->p_rts_flags == 0) enqueue(dst);

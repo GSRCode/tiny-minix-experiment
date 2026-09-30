@@ -50,7 +50,7 @@ int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr)
             *m_ptr = *(sender->p_messbuf);
 
             //sender not blocked
-            sender->p_sendto = -1;
+            sender->p_sendto = NONE;
             sender->p_rts_flags &= ~SENDING;
 
             //Was this SEND part of SENDREC?

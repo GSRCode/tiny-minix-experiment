@@ -89,7 +89,7 @@ load_kernel:
 
     mov ah, 0x02            ; BIOS disk read function.
 
-    mov al, 16                 ; Read 16 sectors = 8 KiB
+    mov al, 32                 ; Read 32 sectors = 16 KiB
 
     mov ch, 0               ; Cylinder zero.
 

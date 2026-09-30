@@ -16,8 +16,8 @@ void proc_init(void)
         proc[i].p_priority = USER_Q;
         proc[i].p_nextready = 0;
         
-        proc[i].p_sendto = -1;
-        proc[i].p_getfrom = -1;
+        proc[i].p_sendto = NONE;
+        proc[i].p_getfrom = NONE;
         proc[i].p_messbuf = 0;
         proc[i].p_caller_q = 0;
         proc[i].p_q_link = 0;
