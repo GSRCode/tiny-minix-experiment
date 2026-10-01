@@ -6,6 +6,7 @@
 void tty(void)
 {
     struct message msg;
+    unsigned char scan_code;
 
     for (;;) {
 
@@ -22,14 +23,21 @@ void tty(void)
         if (msg.m_source == HARDWARE &&
             msg.m_type == NOTIFY_MESSAGE) {
 
-            if (keyboard_scan_code_ready) {
+            while (keyboard_tail != keyboard_head) {
+
+                scan_code = keyboard_buffer[keyboard_tail];
+
+                keyboard_tail++;
+
+                if (keyboard_tail == KEYBOARD_BUFFER_SIZE)
+                    keyboard_tail = 0;
 
                 kprint("TTY KEY: ");
-                kprint_uint(keyboard_scan_code);
-                kprint("\n");
-
-                keyboard_scan_code_ready = 0;
+                kprint_uint(scan_code);
+                kprint(" ");
             }
+
         }
+        
     }
 }

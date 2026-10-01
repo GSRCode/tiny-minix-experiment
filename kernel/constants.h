@@ -32,6 +32,7 @@
 
 #define KEYBOARD_IRQ       1
 #define KEYBOARD_DATA_PORT 0x60
+#define KEYBOARD_BUFFER_SIZE 8
 
 /* VGA text mode constants. */
 #define VGA_WIDTH 80

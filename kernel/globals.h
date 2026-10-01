@@ -14,8 +14,9 @@ extern unsigned char proc_stack[NR_PROCS][K_STACK_SIZE];
 extern volatile int need_resched;
 extern volatile unsigned long clock_ticks;
 
-extern volatile unsigned char keyboard_scan_code;
-extern volatile int keyboard_scan_code_ready;
+extern volatile unsigned char keyboard_buffer[KEYBOARD_BUFFER_SIZE];
+extern volatile int keyboard_head;
+extern volatile int keyboard_tail;
 
 extern volatile unsigned short *vga;
 extern int cursor_row;
