@@ -8,6 +8,9 @@ unsigned char proc_stack[NR_PROCS][K_STACK_SIZE];
 volatile int need_resched = 0;
 volatile unsigned long clock_ticks = 0;
 
+volatile unsigned char keyboard_scan_code = 0;
+volatile int keyboard_scan_code_ready = 0;
+
 volatile unsigned short *vga = (volatile unsigned short *)VGA_MEMORY;
 int cursor_row = 0;
 int cursor_col = 0;

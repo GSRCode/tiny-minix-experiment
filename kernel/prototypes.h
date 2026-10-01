@@ -15,10 +15,11 @@ void proc_c(void);
 /* Process management and scheduling. */
 void copy_name(char *dest, const char *src);
 void proc_init(void);
-void proc_create(int nr, const char *name, void (*entry)(void));
+void proc_create(int nr, const char *name, void (*entry)(void), int priority, int quantum);
 void sched(void);
 void sched_tick(void);
 unsigned long clock_schedule(unsigned long current_sp);
+
 void enqueue(struct proc *rp);
 void dequeue(struct proc *rp);
 void pick_proc(void);
@@ -26,6 +27,12 @@ int mini_send(struct proc *caller, int dst_nr, struct message *m_ptr);
 int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr);
 int mini_sendrec(struct proc *caller, int dst_nr, struct message *m_ptr);
 int mini_notify(struct proc *caller, int dst_nr);
+
+int hardware_notify(int dst_nr);
+
+void tty(void);
+void idle(void);
+
 unsigned long sys_call(struct stackframe *frame);
 void kernel_call_entry(void);
 int deadlock(int src_nr, int dst_nr);
@@ -42,6 +49,7 @@ unsigned long system_call(int call_nr);
 /*keyboard*/
 void keyboard_interrupt(void);
 void keyboard_handler(void);
+unsigned long keyboard_schedule(unsigned long current_sp);
 
 /* Console. */
 void console_clear(void);

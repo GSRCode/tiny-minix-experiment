@@ -51,6 +51,7 @@ EXTERN clock_handler
 EXTERN clock_schedule
 extern sys_call
 extern keyboard_handler
+extern keyboard_schedule
 
 
 EXTERN __bss_start
@@ -640,7 +641,15 @@ kernel_call_entry:
 keyboard_interrupt:
     pushad
 
+    mov ebx, esp
+    
     call keyboard_handler
+
+    push ebx
+    call keyboard_schedule
+    add esp, 4
+
+    mov esp, eax
 
     popad
     iretd

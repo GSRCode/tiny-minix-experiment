@@ -10,7 +10,7 @@
 
 #define P_NAME_LEN 16
 #define K_STACK_SIZE 1024
-#define DEFAULT_QUANTUM 50
+
 #define SYS386_VECTOR 0x80
 
 #define SEND       1
@@ -21,6 +21,8 @@
 #define ANY        (-1)
 #define E_DEADLOCK (-2)
 #define NONE       (-3)
+#define HARDWARE   (-4)
+
 
 /* Kernel system calls. */
 #define SYS_GETUPTIME  10
@@ -66,7 +68,15 @@
 #define IDT_SIZE 256
 
 #define NR_SCHED_QUEUES 16
-#define USER_Q 7
+
+#define TTY_Q   1
+#define USER_Q  7
 #define IDLE_Q 15
+
+#define DEFAULT_QUANTUM 50
+
+#define TTY_PROC_NR 3
+#define IDLE_PROC_NR 4
+
 
 #endif

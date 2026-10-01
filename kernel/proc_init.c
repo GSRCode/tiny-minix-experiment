@@ -25,6 +25,7 @@ void proc_init(void)
         proc[i].p_sendrec = 0;
 
         proc[i].p_pending_notify = 0;
+        proc[i].p_pending_hardware = 0;
 
         p = (unsigned char *)&proc[i].p_reg;
         for (j = 0; j < sizeof(struct stackframe); j++) p[j] = 0;

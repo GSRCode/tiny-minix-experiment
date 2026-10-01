@@ -9,7 +9,23 @@ int mini_receive(struct proc *caller, int src_nr, struct message *m_ptr)
     
     int i;
 
-    //First check whether there is a pending notification.
+    //check for a pending hardware notification.
+ 
+    if (caller->p_pending_hardware) {
+
+        if (src_nr == ANY || src_nr == HARDWARE) {
+
+            caller->p_pending_hardware = 0;
+
+            m_ptr->m_source = HARDWARE;
+            m_ptr->m_type = NOTIFY_MESSAGE;
+            m_ptr->m_value = 0;
+
+            return 0;
+        }
+    }
+
+    //check whether there is a pending notification.
     //RECEIVE(ANY) accepts a notification from any process.
     //RECEIVE(src_nr) accepts only a notification from src_nr.
     

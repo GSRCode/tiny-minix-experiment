@@ -12,10 +12,14 @@ void kernel_main(void)
     pit_init(100);
     proc_init();
     
-    proc_create(1, "proc_b", proc_b);
-    proc_create(0, "proc_a", proc_a);
+    proc_create(1, "proc_b", proc_b, USER_Q, DEFAULT_QUANTUM);
+    proc_create(0, "proc_a", proc_a, USER_Q, DEFAULT_QUANTUM);
     
-    proc_create(2, "proc_c", proc_c);
+    proc_create(2, "proc_c", proc_c, USER_Q, DEFAULT_QUANTUM);
+
+    proc_create(TTY_PROC_NR, "tty", tty, TTY_Q, DEFAULT_QUANTUM);
+
+    proc_create(IDLE_PROC_NR, "idle", idle, IDLE_Q, DEFAULT_QUANTUM);
     
     
     kprint("Process table initialized.\n");

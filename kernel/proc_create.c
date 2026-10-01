@@ -1,15 +1,15 @@
 #include "globals.h"
 #include "prototypes.h"
 
-void proc_create(int nr, const char *name, void (*entry)(void))
+void proc_create(int nr, const char *name, void (*entry)(void), int priority, int quantum)
 {
     struct stackframe *frame;
     if (nr < 0 || nr >= NR_PROCS) return;
     proc[nr].p_nr = nr;
     proc[nr].p_rts_flags = 0;
-    proc[nr].p_priority = USER_Q;
+    proc[nr].p_priority = priority;
     proc[nr].p_nextready = 0;
-    proc[nr].p_quantum_size = DEFAULT_QUANTUM;
+    proc[nr].p_quantum_size = quantum;
     proc[nr].p_ticks_left = proc[nr].p_quantum_size;
     copy_name(proc[nr].p_name, name);
     frame = (struct stackframe *)(&proc_stack[nr][K_STACK_SIZE] - sizeof(struct stackframe));
