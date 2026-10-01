@@ -50,12 +50,16 @@ unsigned long system_call(int call_nr);
 void keyboard_interrupt(void);
 void keyboard_handler(void);
 unsigned long keyboard_schedule(unsigned long current_sp);
+char scan_code_to_char(unsigned char scan_code, int shift, int caps_lock);
 
 /* Console. */
 void console_clear(void);
+void console_backspace(void);
+
 void kprint(const char *message);
 void kprint_hex(unsigned int value);
 void kprint_uint(unsigned long value);
+void kprint_char(char c);
 
 /* Exceptions. */
 void exception_error(unsigned int vector, unsigned int error,
